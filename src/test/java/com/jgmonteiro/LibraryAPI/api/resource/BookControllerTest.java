@@ -1,6 +1,7 @@
 package com.jgmonteiro.LibraryAPI.api.resource;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jgmonteiro.LibraryAPI.api.dto.BookDTO;
 import com.jgmonteiro.LibraryAPI.api.model.entity.Book;
@@ -20,6 +21,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -40,7 +43,7 @@ public class BookControllerTest {
 
     @Test
     @DisplayName("Deve criar um livro com sucesso")
-    public void createBookTest() throws Exception{
+    public void createBookTest() throws Exception {
 
         BookDTO dto = BookDTO.builder().author("João").title("Livro1").isbn("001").build();
         Book savedBook = Book.builder().id(10l).author("João").title("Livro1").isbn("001").build();
@@ -57,10 +60,20 @@ public class BookControllerTest {
         mvc.perform(request)
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("id").value(10l))
+                .andExpect(MockMvcResultMatchers.content().contentType("application/json;charset=UTF-8"))
                 .andExpect(jsonPath("title").value(dto.getTitle()))
                 .andExpect(jsonPath("author").value(dto.getAuthor()))
                 .andExpect(jsonPath("isbn").value(dto.getIsbn()));
 
+    }
+
+    @Test
+    public void verificandoSeOJsonFoiCriado() throws JsonProcessingException {
+        BookDTO dto = BookDTO.builder().author("João").title("Livro1").isbn("001").build();
+        Book savedBook = Book.builder().id(10l).author("João").title("Livro1").isbn("001").build();
+
+        String json = new ObjectMapper().writeValueAsString(dto);
+        System.out.println(json);
     }
 
     @Test

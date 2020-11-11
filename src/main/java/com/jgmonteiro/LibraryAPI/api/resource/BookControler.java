@@ -26,7 +26,7 @@ public class BookControler {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public BookDTO createBook(@RequestBody BookDTO bookDTO){
-        Book entity = modelMapper.map(bookDTO, Book.class); 
+        Book entity = modelMapper.map(bookDTO, Book.class);
         entity = service.save(entity);
         return modelMapper.map(entity, BookDTO.class);
 

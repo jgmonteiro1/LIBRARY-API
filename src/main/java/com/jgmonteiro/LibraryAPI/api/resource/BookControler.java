@@ -3,33 +3,30 @@ package com.jgmonteiro.LibraryAPI.api.resource;
 import com.jgmonteiro.LibraryAPI.api.dto.BookDTO;
 import com.jgmonteiro.LibraryAPI.api.model.entity.Book;
 import com.jgmonteiro.LibraryAPI.api.service.BookService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.*;
 
-@Controller
-@RequestMapping(value = "/api/books")
-public class BookControler {
+import javax.validation.Valid;
 
-    private BookService service;
-    private ModelMapper modelMapper;
+@RestController
+@RequestMapping("/api/books")
+@RequiredArgsConstructor
+class BookController {
 
-    public BookControler(BookService service, ModelMapper modelMapper) {
-        this.service = service;
-        this.modelMapper = modelMapper;
-    }
+    private final BookService service;
+    private final ModelMapper modelMapper;
+
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public BookDTO createBook(@RequestBody BookDTO bookDTO){
-        Book entity = modelMapper.map(bookDTO, Book.class);
+    public BookDTO create( @RequestBody @Valid BookDTO dto ){
+        Book entity = modelMapper.map( dto, Book.class );
         entity = service.save(entity);
         return modelMapper.map(entity, BookDTO.class);
-
     }
 
 }

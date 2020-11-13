@@ -24,29 +24,30 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
-@WebMvcTest(controllers = BookControler.class)
+@WebMvcTest(controllers = BookController.class)
 @AutoConfigureMockMvc
 public class BookControllerTest {
 
-    @Autowired
-    private MockMvc mvc;
+    static String BOOK_API = "/api/books";
 
-    private static final String BOOK_API = "/api/books";
+    @Autowired
+    MockMvc mvc;
 
     @MockBean
     BookService service;
 
+
+
     @Test
-    @DisplayName("Deve criar um livro com sucesso")
+    @DisplayName("Deve criar um livro com sucesso.")
     public void createBookTest() throws Exception {
 
-        BookDTO dto = BookDTO.builder().author("João").title("Livro1").isbn("001").build();
-        Book savedBook = Book.builder().id(10l).author("João").title("Livro1").isbn("001").build();
+        BookDTO dto = createNewBook();
+        Book savedBook = Book.builder().id(10l).author("Artur").title("As aventuras").isbn("001").build();
 
         BDDMockito.given(service.save(Mockito.any(Book.class))).willReturn(savedBook);
         String json = new ObjectMapper().writeValueAsString(dto);
@@ -57,15 +58,19 @@ public class BookControllerTest {
                 .accept(MediaType.APPLICATION_JSON)
                 .content(json);
 
-        mvc.perform(request)
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("id").value(10l))
-                .andExpect(MockMvcResultMatchers.content().contentType("application/json;charset=UTF-8"))
-                .andExpect(jsonPath("title").value(dto.getTitle()))
-                .andExpect(jsonPath("author").value(dto.getAuthor()))
-                .andExpect(jsonPath("isbn").value(dto.getIsbn()));
+        mvc
+                .perform(request)
+                .andExpect( status().isCreated() )
+                .andExpect( jsonPath("id").value(10l) )
+                .andExpect( jsonPath("title").value(dto.getTitle()) )
+                .andExpect( jsonPath("author").value(dto.getAuthor()) )
+                .andExpect( jsonPath("isbn").value(dto.getIsbn()) )
+
+        ;
 
     }
+
+
 
     @Test
     public void verificandoSeOJsonFoiCriado() throws JsonProcessingException {
@@ -81,4 +86,9 @@ public class BookControllerTest {
     public void createInvalidBookTest(){
 
     }
+
+    private BookDTO createNewBook() {
+        return BookDTO.builder().author("Artur").title("As aventuras").isbn("001").build();
+    }
+
 }

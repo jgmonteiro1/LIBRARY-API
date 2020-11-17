@@ -1,5 +1,6 @@
 package com.jgmonteiro.LibraryAPI.api.model.repository;
 
+import com.jgmonteiro.LibraryAPI.api.model.entity.Book;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -26,6 +27,8 @@ public class BookRepositoryTesty {
     public void returnTrueWhenIsbnExists(){
         //cenário
         String isbn = "123";
+        Book book = Book.builder().title("A").author("Fulano").isbn(isbn).build();
+        entityManager.persist(book);
         //execução
         boolean exists = repository.existsByIsbn(isbn);
         //verificação

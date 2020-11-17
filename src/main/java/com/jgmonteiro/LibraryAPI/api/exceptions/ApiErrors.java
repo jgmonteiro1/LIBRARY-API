@@ -18,7 +18,7 @@ public class ApiErrors {
 
     public ApiErrors(BusinessException exception) {
         this.errors = Arrays.asList(exception.getMessage());
-        
+
     }
 
     public List<String> getErrors() {

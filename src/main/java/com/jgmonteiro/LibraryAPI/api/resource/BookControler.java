@@ -4,6 +4,7 @@ import com.jgmonteiro.LibraryAPI.api.dto.BookDTO;
 import com.jgmonteiro.LibraryAPI.api.exceptions.ApiErrors;
 import com.jgmonteiro.LibraryAPI.api.model.entity.Book;
 import com.jgmonteiro.LibraryAPI.api.service.BookService;
+import com.jgmonteiro.LibraryAPI.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -39,5 +40,11 @@ class BookController {
     public ApiErrors handleValidationExceptions(MethodArgumentNotValidException exception){
         BindingResult bindingResult = exception.getBindingResult();
         return new ApiErrors(bindingResult);
+    }
+
+    @ExceptionHandler(BusinessException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ApiErrors handleBusinessExceptions(BusinessException exception){
+        return  new ApiErrors(exception);
     }
 }

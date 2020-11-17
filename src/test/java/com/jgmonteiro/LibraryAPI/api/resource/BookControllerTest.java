@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jgmonteiro.LibraryAPI.api.dto.BookDTO;
 import com.jgmonteiro.LibraryAPI.api.model.entity.Book;
 import com.jgmonteiro.LibraryAPI.api.service.BookService;
+import com.jgmonteiro.LibraryAPI.exception.BusinessException;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -99,8 +100,28 @@ public class BookControllerTest {
            .andExpect(jsonPath("errors", Matchers.hasSize(3)));
     }
 
+
+    @Test
+    @DisplayName("Deve lançar exception ao tentar cadastrar livro com ISBN já cadastrado")
+    public void createInvalidBookWithDuplicatedIsbn() throws Exception{
+
+        BookDTO newBook = createNewBook();
+        String json = new ObjectMapper().writeValueAsString(newBook);
+        BDDMockito.given(service.save(Mockito.any(Book.class))).willThrow(new BusinessException("Isbn já cadastrado"));
+
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+                .post(BOOK_API)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .content(json);
+
+        mvc.perform(request)
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("errors", Matchers.hasSize(1)))
+                .andExpect(jsonPath("errors[0]").value("Isbn já cadastrado"));
+    }
+
     private BookDTO createNewBook() {
         return BookDTO.builder().author("Artur").title("As aventuras").isbn("001").build();
     }
-
 }
